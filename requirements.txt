@@ -1,0 +1,5 @@
+Flask==2.0.1
+opencv-python==4.5.3.56
+numpy==1.21.0
+Werkzeug==2.0.1
+inference-sdk==1.0.0
