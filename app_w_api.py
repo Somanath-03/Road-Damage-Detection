@@ -8,8 +8,8 @@ from werkzeug.utils import secure_filename
 from inference_sdk import InferenceHTTPClient
 import os
 
-API_KEY = os.getenv("SECRET_KEY")
-API_URL = os.getenv("DATABASE_URL")
+API_KEY = os.getenv("API_KEY")
+API_URL = os.getenv("API_URL")
 
 app = Flask(__name__)
 
