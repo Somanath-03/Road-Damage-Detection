@@ -6,6 +6,7 @@ import math
 from flask import Flask, request, jsonify, render_template
 from werkzeug.utils import secure_filename
 from inference_sdk import InferenceHTTPClient
+import config  # Import the config file
 
 app = Flask(__name__)
 
@@ -17,10 +18,9 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Create an inference client
 CLIENT = InferenceHTTPClient(
-    api_url="https://detect.roboflow.com",
-    api_key="GDQW7o1LCkMOjwQNH4aL"
+    api_url=config.API_URL,
+    api_key=config.API_KEY
 )
-
 
 @app.route('/')
 def index():
