@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pothole Detection - Video Upload</title>
+    <style>
+        :root {
+            --primary-color: #6c5ce7;
+            --secondary-color: #a29bfe;
+            --accent-color: #fd79a8;
+            --background-color: #2d3436;
+            --surface-color: #636e72;
+            --text-color: #dfe6e9;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: var(--text-color);
+            line-height: 1.6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: rgba(45, 52, 54, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            width: 100%;
+            max-width: 600px;
+            transition: all 0.3s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4);
+        }
+
+        h1 {
+            color: var(--text-color);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .upload-area {
+            border: 3px dashed var(--secondary-color);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-area::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(108, 92, 231, 0.1) 0%, rgba(108, 92, 231, 0) 70%);
+            transform: scale(0);
+            transition: transform 0.6s ease-out;
+        }
+
+        .upload-area:hover::before {
+            transform: scale(1);
+        }
+
+        .upload-area:hover {
+            background-color: rgba(108, 92, 231, 0.1);
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 64px;
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .upload-area:hover .upload-icon {
+            transform: scale(1.1) rotate(15deg);
+        }
+
+        .upload-text {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .upload-area:hover .upload-text {
+            color: var(--accent-color);
+        }
+
+        #file-input {
+            display: none;
+        }
+
+        .file-info {
+            margin-top: 20px;
+            font-size: 1rem;
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                120deg,
+                transparent,
+                rgba(255, 255, 255, 0.3),
+                transparent
+            );
+            transition: all 0.6s;
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
+        .submit-btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .submit-btn:active {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .submit-btn:disabled {
+            background-color: var(--surface-color);
+            cursor: not-allowed;
+        }
+
+        #results {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            display: none;
+        }
+
+        #results h2 {
+            margin-bottom: 10px;
+        }
+
+        #pothole-frames {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .frame-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .frame-image {
+            max-width: 200px;
+            max-height: 200px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        .frame-number {
+            margin-top: 5px;
+            font-size: 0.9rem;
+        }
+
+        .loader {
+            border: 5px solid var(--surface-color);
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .upload-area {
+                padding: 20px;
+            }
+
+            .upload-icon {
+                font-size: 48px;
+            }
+
+            .upload-text {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Pothole Detection</h1>
+        <div class="upload-area" id="drop-area">
+            <div class="upload-icon">📹</div>
+            <p class="upload-text">Drag & Drop your video here or click to browse</p>
+            <input type="file" id="file-input" accept="video/*">
+            <p class="file-info" id="file-info">No file selected</p>
+        </div>
+        <button class="submit-btn" id="submit-btn" disabled>Analyze Video</button>
+        <div class="loader" id="loader"></div>
+        <div id="results">
+            <h2>Detection Results</h2>
+            <p>Total Frames: <span id="total-frames"></span></p>
+            <p>Frames with Potholes:</p>
+            <div id="pothole-frames"></div>
+        </div>
+    </div>
+
+    <script>
+        const dropArea = document.getElementById('drop-area');
+        const fileInput = document.getElementById('file-input');
+        const fileInfo = document.getElementById('file-info');
+        const submitBtn = document.getElementById('submit-btn');
+        const loader = document.getElementById('loader');
+        const results = document.getElementById('results');
+        const totalFrames = document.getElementById('total-frames');
+        const potholeFrames = document.getElementById('pothole-frames');
+
+        dropArea.addEventListener('click', () => fileInput.click());
+
+        dropArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropArea.style.backgroundColor = 'rgba(108, 92, 231, 0.2)';
+        });
+
+        dropArea.addEventListener('dragleave', () => {
+            dropArea.style.backgroundColor = 'transparent';
+        });
+
+        dropArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropArea.style.backgroundColor = 'transparent';
+            handleFiles(e.dataTransfer.files);
+        });
+
+        fileInput.addEventListener('change', () => {
+            handleFiles(fileInput.files);
+        });
+
+        function handleFiles(files) {
+            if (files.length > 0) {
+                const file = files[0];
+                if (file.type.startsWith('video/')) {
+                    fileInfo.textContent = `Selected file: ${file.name}`;
+                    submitBtn.disabled = false;
+                } else {
+                    fileInfo.textContent = 'Please select a valid video file.';
+                    submitBtn.disabled = true;
+                }
+            }
+        }
+
+        submitBtn.addEventListener('click', async () => {
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('video', file);
+
+            submitBtn.disabled = true;
+            loader.style.display = 'block';
+            results.style.display = 'none';
+
+            try {
+                const response = await fetch('/detect_potholes', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    totalFrames.textContent = data.total_frames;
+                    potholeFrames.innerHTML = data.pothole_frames
+                        .map(frame => `
+                            <div class="frame-container">
+                                <img src="data:image/jpeg;base64,${frame.image}" alt="Frame ${frame.frame_number}" class="frame-image">
+                                <span class="frame-number">Frame ${frame.frame_number}</span>
+                            </div>
+                        `)
+                        .join('');
+                    results.style.display = 'block';
+                } else {
+                    alert(`Error: ${data.error}`);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while processing the video.');
+            } finally {
+                submitBtn.disabled = false;
+                loader.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
+
